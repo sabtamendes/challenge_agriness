@@ -1,0 +1,90 @@
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - "${PORT:-5000}:5000"
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
+    environment:
+      - FLASK_APP=${FLASK_APP}
+      - FLASK_ENV=${FLASK_ENV}
+      - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - REDIS_HOST=redis
+    entrypoint: [
+      "/bin/sh", "-c", 
+      "rm -rf migrations &&
+      flask db init && 
+      flask db migrate -m 'Initial migration.' && 
+      flask db upgrade && 
+      flask run --host=0.0.0.0"
+    ]
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14
+    container_name: db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - app-network
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A src.celery_app.celery worker --loglevel=info -E
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      - rabbitmq
+      - redis
+      - db
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15673:15672"
+      - "5678:5672"
+    networks:
+      - app-network
+
+
+
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

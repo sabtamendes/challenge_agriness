@@ -1,0 +1,90 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+migrations/
+develop-eggs/
+dist/
+downloads/
+eggs/
+eggs-info/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# pyenv
+.python-version
+
+# pytest
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+*.log
+.coverage
+*.cache
+*.tox/
+*.nox/
+*.coverage.*
+*.hypothesis/
+.pytest_cache/
+
+# Flask
+instance/
+*.sqlite
+*.db
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+/static/
+media/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Environment files
+.venv/
+venv/
+ENV/
+env/
